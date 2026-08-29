@@ -1,0 +1,8 @@
+{
+    "packages": [
+        {"name": "vendor/pkg", "version": "1.0.0"}
+    ],
+    "packages-dev": [
+        {"name": "vendor/pkg", "version": "2.0.0"}
+    ]
+}

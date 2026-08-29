@@ -1,0 +1,7 @@
+{
+    "advisories": {
+        "monolog/monolog": [],
+        "symfony/console": [],
+        "phpunit/phpunit": []
+    }
+}

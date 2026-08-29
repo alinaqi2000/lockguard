@@ -1,0 +1,7 @@
+{
+    "packages": [
+        {"name": "monolog/monolog", "version": "1.10.0"},
+        {"name": "symfony/console", "version": "v6.0.0"}
+    ],
+    "packages-dev": []
+}
