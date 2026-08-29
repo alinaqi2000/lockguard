@@ -46,7 +46,7 @@ jobs:
         env:
           CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_LINKER: aarch64-linux-gnu-gcc
 
-      - name: Package binary
+      - name: Package tar.gz
         run: |
           mkdir -p dist
           cp target/${{ matrix.target }}/release/lockguard dist/
@@ -57,9 +57,76 @@ jobs:
           cd ..
           sha256sum lockguard-${{ matrix.target }}.tar.gz > lockguard-${{ matrix.target }}.tar.gz.sha256
 
+      - name: Build .deb package
+        if: matrix.target == 'x86_64-unknown-linux-gnu'
+        run: |
+          VERSION=${GITHUB_REF_NAME#v}
+          mkdir -p deb/lockguard_${VERSION}_amd64/usr/bin
+          mkdir -p deb/lockguard_${VERSION}_amd64/DEBIAN
+          cp target/${{ matrix.target }}/release/lockguard deb/lockguard_${VERSION}_amd64/usr/bin/
+          chmod 755 deb/lockguard_${VERSION}_amd64/usr/bin/lockguard
+          cat > deb/lockguard_${VERSION}_amd64/DEBIAN/control <<EOF
+          Package: lockguard
+          Version: ${VERSION}
+          Architecture: amd64
+          Maintainer: Ali Naqi Al-Musawi <ali@alinaqi.dev>
+          Description: Audit composer.lock for known security vulnerabilities
+           LockGuard reads a PHP project's composer.lock and checks all
+           packages against the Packagist Security Advisories API.
+          Section: utils
+          Priority: optional
+          EOF
+          dpkg-deb --build deb/lockguard_${VERSION}_amd64
+          sha256sum deb/lockguard_${VERSION}_amd64.deb > deb/lockguard_${VERSION}_amd64.deb.sha256
+
+      - name: Build .rpm package
+        if: matrix.target == 'x86_64-unknown-linux-gnu'
+        run: |
+          VERSION=${GITHUB_REF_NAME#v}
+          sudo apt-get install -y rpm
+          mkdir -p rpm/BUILD rpm/RPMS rpm/SOURCES rpm/SPECS rpm/SRPMS
+          cat > rpm/SPECS/lockguard.spec <<EOF
+          Name:           lockguard
+          Version:        ${VERSION}
+          Release:        1
+          Summary:        Audit composer.lock for known security vulnerabilities
+          License:        MIT
+          URL:            https://github.com/alinaqi2000/lockguard
+          Source0:        %{name}-%{version}.tar.gz
+          BuildArch:      x86_64
+          %description
+          LockGuard reads a PHP project's composer.lock and checks all packages
+          against the Packagist Security Advisories API.
+          %prep
+          %setup -q
+          %build
+          %install
+          mkdir -p %{buildroot}/%{_bindir}
+          cp lockguard %{buildroot}/%{_bindir}/
+          chmod 755 %{buildroot}/%{_bindir}/lockguard
+          %files
+          %{_bindir}/lockguard
+          EOF
+          mkdir -p rpm/SOURCES/lockguard-${VERSION}
+          cp target/${{ matrix.target }}/release/lockguard rpm/SOURCES/lockguard-${VERSION}/
+          cd rpm/SOURCES
+          tar czf lockguard-${VERSION}.tar.gz lockguard-${VERSION}
+          cd ../..
+          rpmbuild -bb rpm/SPECS/lockguard.spec \
+            --define "_topdir $(pwd)/rpm" \
+            --define "_version ${VERSION}"
+          RPM_FILE=$(find rpm/RPMS -name "*.rpm" | head -1)
+          cp "$RPM_FILE" .
+          RPM_NAME=$(basename "$RPM_FILE")
+          sha256sum "$RPM_NAME" > "${RPM_NAME}.sha256"
+
       - name: Upload release assets
         uses: softprops/action-gh-release@v2
         with:
           files: |
             lockguard-${{ matrix.target }}.tar.gz
             lockguard-${{ matrix.target }}.tar.gz.sha256
+            deb/*.deb
+            deb/*.deb.sha256
+            *.rpm
+            *.rpm.sha256

@@ -1,0 +1,19 @@
+# Maintainer: Ali Naqi Al-Musawi <ali@alinaqi.dev>
+pkgname=lockguard-bin
+pkgver=0.1.0
+pkgrel=1
+pkgdesc="Audit composer.lock for known security vulnerabilities"
+arch=('x86_64')
+url="https://github.com/alinaqi2000/lockguard"
+license=('MIT')
+depends=('gcc-libs')
+provides=('lockguard')
+conflicts=('lockguard')
+source_x86_64=("lockguard-${pkgver}-x86_64-unknown-linux-gnu.tar.gz::${url}/releases/download/v${pkgver}/lockguard-x86_64-unknown-linux-gnu.tar.gz")
+sha256sums_x86_64=('SKIP')
+
+package() {
+    install -Dm755 "${srcdir}/lockguard" "${pkgdir}/usr/bin/lockguard"
+    install -Dm644 "${srcdir}/LICENSE" "${pkgdir}/usr/share/licenses/lockguard/LICENSE"
+    install -Dm644 "${srcdir}/README.md" "${pkgdir}/usr/share/doc/lockguard/README.md"
+}
