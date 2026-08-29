@@ -5,8 +5,11 @@ edition = "2021"
 license = "MIT"
 description = "Audit composer.lock for known security vulnerabilities"
 readme = "README.md"
+repository = "https://github.com/alinaqi/lockguard"
+homepage = "https://github.com/alinaqi/lockguard"
 keywords = ["security", "composer", "php", "audit", "vulnerability"]
 categories = ["command-line-utilities", "development-tools"]
+exclude = ["AGENTS.md", ".env"]
 
 [dependencies]
 clap = { version = "4", features = ["derive"] }
