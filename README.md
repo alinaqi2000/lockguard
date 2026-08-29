@@ -14,7 +14,7 @@ cargo install lockguard
 Or build from source:
 
 ```sh
-git clone https://github.com/alinaqi/lockguard.git
+git clone https://github.com/alinaqi2000/lockguard.git
 cd lockguard
 cargo build --release
 # Binary at target/release/lockguard
