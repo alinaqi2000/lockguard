@@ -26,12 +26,14 @@ echo "Fetching latest release..."
 LATEST=$(curl -fsSL "https://api.github.com/repos/${REPO}/releases/latest" | grep '"tag_name"' | sed -E 's/.*"([^"]+)".*/\1/')
 echo "Latest version: ${LATEST}"
 
+TMPDIR=$(mktemp -d)
+trap 'rm -rf "$TMPDIR"' EXIT
+
 URL="https://github.com/${REPO}/releases/download/${LATEST}/lockguard-${TARGET}.tar.gz"
 echo "Downloading ${URL}..."
-curl -fsSL "$URL" | tar xz -C /tmp
+curl -fsSL "$URL" | tar xz -C "$TMPDIR"
 
 echo "Installing to /usr/local/bin..."
-sudo mv /tmp/lockguard /usr/local/bin/
-sudo chmod +x /usr/local/bin/lockguard
+sudo install -m 755 "$TMPDIR/lockguard" /usr/local/bin/lockguard
 
 echo "Done. Run: lockguard --help"
