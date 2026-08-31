@@ -1,0 +1,21 @@
+[book]
+title = "LockGuard"
+authors = ["Ali Naqi Al-Musawi"]
+description = "Audit composer.lock for known security vulnerabilities"
+language = "en"
+src = "src"
+
+[output.html]
+git-repository-url = "https://github.com/alinaqi2000/lockguard"
+edit-url-template = "https://github.com/alinaqi2000/lockguard/edit/main/docs/src/{path}"
+no-section-label = false
+
+[output.html.search]
+enable = true
+limit-results = 30
+use-boolean-and = true
+boost-title = 2
+boost-hierarchy = 1
+boost-paragraph = 1
+expand = true
+heading-split-level = 3

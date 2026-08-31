@@ -5,6 +5,8 @@ vulnerabilities using the official [Packagist Security Advisories API](https://p
 
 No PHP or Composer installation required.
 
+**Full documentation: https://alinaqi2000.github.io/lockguard/**
+
 ## Installation
 
 ### Cargo (any OS)
