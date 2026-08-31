@@ -7,11 +7,32 @@ No PHP or Composer installation required.
 
 ## Installation
 
+### Cargo (any OS)
+
 ```sh
 cargo install lockguard
 ```
 
-Or build from source:
+### One-liner (Linux)
+
+```sh
+curl -fsSL https://github.com/alinaqi2000/lockguard/releases/latest/download/install.sh | sh
+```
+
+### Debian/Ubuntu
+
+```sh
+wget https://github.com/alinaqi2000/lockguard/releases/latest/download/lockguard_0.1.4_amd64.deb
+sudo dpkg -i lockguard_0.1.4_amd64.deb
+```
+
+### Fedora/RHEL/openSUSE
+
+```sh
+sudo rpm -i https://github.com/alinaqi2000/lockguard/releases/latest/download/lockguard-0.1.4-1.x86_64.rpm
+```
+
+### Build from source
 
 ```sh
 git clone https://github.com/alinaqi2000/lockguard.git
