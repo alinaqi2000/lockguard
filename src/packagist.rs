@@ -3,7 +3,8 @@ use serde::Deserialize;
 use std::collections::HashMap;
 use std::time::Duration;
 
-const BATCH_SIZE: usize = 50;
+const BATCH_SIZE: usize = 15;
+const MAX_RETRIES: u32 = 2;
 const USER_AGENT: &str = "lockguard/0.1.0";
 pub const DEFAULT_BASE_URL: &str = "https://packagist.org";
 
@@ -86,22 +87,58 @@ impl Client {
             url.query_pairs_mut().append_pair("packages[]", pkg);
         }
 
-        let response = self.http.get(url.clone()).send().await?;
+        let mut last_err: Option<Error> = None;
 
-        let status = response.status();
-        if !status.is_success() {
-            return Err(Error::HttpStatus {
+        for attempt in 0..=MAX_RETRIES {
+            if attempt > 0 {
+                let delay = Duration::from_secs(2u64.pow(attempt));
+                eprintln!(
+                    "retrying batch (attempt {}/{}) after {delay:?}...",
+                    attempt + 1,
+                    MAX_RETRIES + 1
+                );
+                tokio::time::sleep(delay).await;
+            }
+
+            let response = match self.http.get(url.clone()).send().await {
+                Ok(r) => r,
+                Err(e) => {
+                    last_err = Some(Error::Http(e));
+                    continue;
+                }
+            };
+
+            let status = response.status();
+
+            if status.is_success() {
+                let body = response.text().await?;
+                let parsed: AdvisoryResponse =
+                    serde_json::from_str(&body).map_err(Error::ResponseDecode)?;
+                return Ok(parsed);
+            }
+
+            let err = Error::HttpStatus {
                 status: status.as_u16(),
                 url: url.to_string(),
-            });
+            };
+
+            if is_transient(status.as_u16()) {
+                last_err = Some(err);
+                continue;
+            }
+
+            return Err(err);
         }
 
-        let body = response.text().await?;
-        let parsed: AdvisoryResponse =
-            serde_json::from_str(&body).map_err(Error::ResponseDecode)?;
-
-        Ok(parsed)
+        Err(last_err.unwrap_or_else(|| Error::HttpStatus {
+            status: 0,
+            url: url.to_string(),
+        }))
     }
+}
+
+fn is_transient(status: u16) -> bool {
+    matches!(status, 429 | 502 | 503 | 504)
 }
 
 #[cfg(test)]
