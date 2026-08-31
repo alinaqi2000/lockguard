@@ -1,6 +1,6 @@
 # Introduction
 
-LockGuard is a command-line tool that scans PHP project dependencies for known security vulnerabilities. It reads a `composer.lock` file, queries the official [Packagist Security Advisories API](https://packagist.org/api/security-advisories/), and reports any packages whose installed versions match a published advisory.
+LockGuard is a command-line tool that scans PHP project dependencies for known security vulnerabilities. It reads a `composer.lock` file, queries the official [Packagist Security Advisories API](https://packagist.org/api/security-advisories/?packages[]=monolog/monolog), and reports any packages whose installed versions match a published advisory.
 
 ## Why use it
 

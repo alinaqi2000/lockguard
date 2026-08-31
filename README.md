@@ -1,7 +1,7 @@
 # LockGuard
 
 A fast, standalone CLI that audits `composer.lock` files for known security
-vulnerabilities using the official [Packagist Security Advisories API](https://packagist.org/api/security-advisories/).
+vulnerabilities using the official [Packagist Security Advisories API](https://packagist.org/api/security-advisories/?packages[]=monolog/monolog).
 
 No PHP or Composer installation required.
 
