@@ -1,6 +1,6 @@
 [package]
 name = "lockguard"
-version = "0.1.1"
+version = "0.1.2"
 edition = "2021"
 license = "MIT"
 description = "Audit composer.lock for known security vulnerabilities"

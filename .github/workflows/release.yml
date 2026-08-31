@@ -130,3 +130,4 @@ jobs:
             deb/*.deb.sha256
             *.rpm
             *.rpm.sha256
+            packaging/install.sh
